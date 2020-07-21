@@ -140,7 +140,7 @@ ggplot() +
 ## Tick Units
 Adjust your major units on the axes accordingly to the range you have. Too few tick marks, and it's hard to estimate the values using the graph and the reader has to delve into your raw data. Too many tick marks, and it's visually really busy. R likes to do it's best, but don't be afraid to be specific, especially for strontium data. 
 
-```{r Tick Units, echo = F}
+```{r Tick Units, echo = F, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = reorder(Sr, Sr), y = Sr)) +
   theme_classic() +
@@ -243,7 +243,7 @@ This is my favorite part, where the graph really starts to shine.
 I like to make the points a little bigger than the base size, so long as they're not overlapping. 
 
 
-```{r Size Queen, fig.show = "hold", out.width = "50%", include = T, echo = F, , warning = F}
+```{r Size, fig.show = "hold", out.width = "50%", include = T, echo = F, , warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
