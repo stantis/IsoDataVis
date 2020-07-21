@@ -123,7 +123,7 @@ Again, looking at you Excel.
 
 ### Axis range too narrow
 This one's trickier, and I often see researchers still learning about stable isotopes make this mistake. A population eating only from a C3 environment with no C4 or marine input might show a range in C-values of only 2 per mill. That doesn't mean your x-axis should only be 2 per mill across! This encourages you and your readers to think about differences in values on too small of a scale, and see patterns that aren't biologically meanful. Even if values are tight, widen out to include the expected environmental range. 
-```{r AxisRange, include = T, echo = F}
+```{r AxisRange, include = T, echo = F, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   scale_x_continuous(limits = c(-19, -17)) +
