@@ -1,14 +1,8 @@
 ---
 title: "Stable Isotopes for Archaeology: Data Visualization"
-knit: (function(input_file, encoding) {
-  out_dir <- 'docs';
-  rmarkdown::render(input_file,
- encoding=encoding,
- output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
-author: "C Stantis"
-date: "7/21/2020"
+author: "C Stantis, PhD"
 output: 
-  github_document:
+  html_document:
     toc: true
     toc_depth: 2
 ---
@@ -171,12 +165,29 @@ ggplot() +
 
 ```
 
+## Axis Titles
+For each axis displaying isotopic values, you'll want: 
+
+1. What's being measured (e.g. $\delta ^{13}$C, $\delta ^{15}$N)
+2. The unit (i.e. per mill ‰)
+3. The international reference used
+
+For `ggplot` the `labs` section is a big help, but it's not easy to superscript, subscript, include Greek characters, or lesser used scientific units. Below is the code you can copy/paste for easy use in your own graphs. Change out `x` and `y` depending on what axis it's on, and always remember to check that you've got matching brackets. 
+
+For carbon from collagen, standardized to VPDB: 
+`x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")))`
+
+Oxygen from carbonate, standarized to VSMOW, would look like this: 
+`x = (expression(paste(delta^18, "O"[carbonate], " (\u2030, VSMOW)")))`
+
+For strontium ratios: 
+`y = (expression(paste(""^{87},"Sr/"^86,"Sr")))`
 
 
-## Labels
-`ggrepel` let's you make sure your text labels don't overlap. My example is a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to move the text off of the points, but `geom_text_repel` is quick and easy. 
+# Labels
+Sometimes it's nice to label the points. The package `ggrepel` let's you make sure your text labels don't overlap. My example of the basic graphics in ggplot a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to move the text off of the points, but you can see that `geom_text_repel` is quick and easy. 
 
-```{r Text Overlap, fig.show = "hold", out.width = "50%", echo = F}
+```{r Text Overlap, fig.show = "hold", out.width = "50%", echo = F, , warning = F}
 ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
   geom_point() +
   geom_text() +
@@ -205,7 +216,7 @@ ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, labe
 
 If you want to only label a few points on the graph, you can either `geom_text_repel` using the `data(subset = ...)` or `annotate('text')`
 
-```{r Annotation, echo = F}
+```{r Annotation, echo = F, , warning = F}
 ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
   geom_point() +
   annotate("text", x = -16.9, y = 7.2, label = paste("Individual 15"), color = "coral") +
@@ -227,7 +238,7 @@ This is my favorite part, where the graph really starts to shine.
 I like to make the points a little bigger than the base size, so long as they're not overlapping. 
 
 
-```{r Size Queen, fig.show = "hold", out.width = "50%", include = T, echo = F}
+```{r Size Queen, fig.show = "hold", out.width = "50%", include = T, echo = F, , warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
@@ -252,7 +263,7 @@ ggplot() +
 ## Color
 I love color. I often try to create my own color palettes for data presentation, keeping in mind that they should be color-blind and printer friendly. When I don't want to create a bespoke palette, I use the package `viridis`. 
 
-```{r Viridis Showoff, fig.show = "hold", out.width = "30%", echo = F}
+```{r Viridis Showoff, fig.show = "hold", out.width = "30%", echo = F, , warning = F}
 ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
   geom_bin2d() + coord_fixed() +
   scale_fill_viridis() +
@@ -278,7 +289,7 @@ ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
 
 The Viridis package isn't great for comparing two groups, so you're best off coming up with your own color scheme at that point. 
 
-```{r Color, fig.show = "hold", out.width = "50%", include = T, echo = F}
+```{r Color, fig.show = "hold", out.width = "50%", include = T, echo = F, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site), size = 3) +
   theme_classic() +
@@ -306,6 +317,10 @@ ggplot() +
 
 ## Bar Graphs For Strontium? 
 No. Never.
+
+
+# What are your thoughts? 
+This is an early version, please let me know what I've missed either through Github or through Twitter if you want to see more isotopes-specific graphing in R. 
 
 [id1]: figures/excel_decimal.jpg "Awful Axes"
 [id2]: figures/excel_zero.jpg "Awful Axes, pt II"
