@@ -30,6 +30,28 @@ Here I'm going to explain the datavis rules that I follow to create stable isoto
 
 I've cleaned the data and put it in this repository as ThesisData.xlsx. Maybe later I'll share some R tips for cleaning data, but today let's focus on datavis. Let's focus on one component at a time, thinking about **why** it might be better to go in one art direction rather than another, and the underlying R code for making your data follow this datavis rule.
 
+Let's compare a simple carbon and nitrogen graph, with the sites color-coded. 
+
+```{r Starting Example, fig.show = "hold", out.width = "50%", include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site))
+
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site), size = 3) +
+ scale_color_manual(values = c("aquamarine3", "darkorange")) +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
+    axis.title = element_text(size = 12)) +
+   labs(
+    color = "Site",
+    shape = "Site",
+    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
+    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))))
+
+```
+The first isn't *too* bad, especially not for intitial data exploration, but it's not ready for presentation.
+
 Let's build the graph, one piece at a time. 
 
 # The Background
