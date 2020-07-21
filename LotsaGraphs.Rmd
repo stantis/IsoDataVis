@@ -1,5 +1,5 @@
 ---
-title: "LotsaGraphs"
+title: "Stable Isotopes for Archaeology: Data Visualization"
 knit: (function(input_file, encoding) {
   out_dir <- 'docs';
   rmarkdown::render(input_file,
@@ -7,29 +7,305 @@ knit: (function(input_file, encoding) {
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 author: "C Stantis"
 date: "7/21/2020"
-output: html_document
+output: 
+  github_document:
+    toc: true
+    toc_depth: 2
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+```{r setup, include = F}
+#knitr::opts_chunk$set(echo = F, include = F)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r Libraries, include = F, echo = F}
+library("tidyverse")
+library("viridis")
+library("ggrepel")
+#remember you have to save your data, it won't knit from the environment.'save(TeD, file = "TeD.RData")'
+load("D:/Dropbox (Personal)/R/IsoDataVis/ThesisData.RData")
 ```
 
-## Including Plots
+Good data visualization helps you tell your data's story with minimal misunderstanding. 
 
-You can also embed plots, for example:
+Here I'm going to explain the datavis rules that I follow to create stable isotopes graphs, along with the associated R code. I'm going to use bone collagen data (carbon, nitrogen, sulphur, and strontium) from my [PhD Thesis](https://ourarchive.otago.ac.nz/handle/10523/6019). These are bone samples from individuals excavated from two Polynesian sites, Bourewa (Fiji) and `Atele (Tonga). 
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+I've cleaned the data and put it in this repository as ThesisData.xlsx. Maybe later I'll share some R tips for cleaning data, but today let's focus on datavis. Let's focus on one component at a time, thinking about **why** it might be better to go in one art direction rather than another, and the underlying R code for making your data follow this datavis rule.
+
+Let's build the graph, one piece at a time. 
+
+# The Background
+I love dark themes. I'm writing in one of RStudio's right now. But, unless you're creating graphs for a dark-themed presentation or web output, graphs with black backgrounds aren't going to work well in publication and **no one** will like you if they're printing out your paper. 
+
+Some people like grid lines but I prefer a clean slate. The first image below is the carbon and nitrogen data plotted using ggplot, with no theme. The second image is the same data, but using the `theme_classic()` option.  
+
+
+```{r Background Example, fig.show = "hold", out.width = "50%", include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank(), 
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()) +
+   labs(
+    x = '',
+    y = '',
+    title = 'No Theme')
+
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+ theme_classic() +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.text.x=element_blank(),
+    axis.ticks.x=element_blank(), 
+    axis.text.y=element_blank(),
+    axis.ticks.y=element_blank()) +
+   labs(
+    x = '',
+    y = '',
+    title = 'theme_classic')
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+# Axis Text and Ticks
+## Values
+When displaying any interval data, don't display any more decimal places than needed. Otherwise, the graph becomes increasingly difficult to read. Yes, I know that many stable isotopes data are presented to the first or even second decimal, you don't need decimal points on your axes for isotope data other than strontium, save that richness of data for tables and text. This might be my biggest pet peeve for the smallest reason. It's hard to add extraneous decimal places in R, so I'm mostly looking at you, Excel users. 
+
+![don't do this.][id1]
+
+Make sure the values text is large enough to read easily for most. Err on the side of caution, some publishers like to shove your figure into one column of a two-column article layout.
+
+
+```{r Axis, fig.show = "hold", out.width = "50%", include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+  theme_classic() +
+  theme(plot.title = element_text(size = 16)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'Standard Axis Size')
+
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'element_text(size = 12)')
+```
+I sometimes angle the x-axis values because I think that makes me look fancy. 
+```{r AxisAngle, include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+  theme_classic() +
+  theme(
+    axis.text.y = element_text(size = 12),
+    axis.text.x = element_text(size = 12, angle = 30, hjust = 1)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'element_text(angle = 60, hjust = 1)')
+```
+
+## Ticks and value range
+Be mindful of the value range you use. R and Excel try to be helpful, but there's two major ways they can be wrong. 
+
+### Starting at zero
+Again, looking at you Excel. 
+
+![don't do this either.][id2]
+
+### Axis range too narrow
+This one's trickier, and I often see researchers still learning about stable isotopes make this mistake. A population eating only from a C3 environment with no C4 or marine input might show a range in C-values of only 2 per mill. That doesn't mean your x-axis should only be 2 per mill across! This encourages you and your readers to think about differences in values on too small of a scale, and see patterns that aren't biologically meanful. Even if values are tight, widen out to include the expected environmental range. 
+```{r AxisRange, include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+  scale_x_continuous(limits = c(-19, -17)) +
+  theme_classic() +
+  theme(
+    axis.text.y = element_text(size = 12),
+    axis.text.x = element_text(size = 12, angle = 30, hjust = 1)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'Tight X Axis')
+```
+
+## Tick Units
+Adjust your major units on the axes accordingly to the range you have. Too few tick marks, and it's hard to estimate the values using the graph and the reader has to delve into your raw data. Too many tick marks, and it's visually really busy. R likes to do it's best, but don't be afraid to be specific, especially for strontium data. 
+
+```{r Tick Units, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = reorder(Sr, Sr), y = Sr)) +
+  theme_classic() +
+  theme(
+    axis.text.y = element_text(size = 12),
+    axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+ 
+   labs(
+      x = "", 
+      y = "",
+      title = 'Automatic Tick Units')
+
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = reorder(Sr, Sr), y = Sr)) +
+  scale_y_continuous(breaks = c(0.7070,0.7074,0.7078,0.7082,0.7086,0.7090)) +
+  theme_classic() +
+  theme(
+    axis.text.y = element_text(size = 12),
+    axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank())+ 
+   labs(
+      x = "", 
+      y = "",
+      title = 'scale_y_continuous(breaks = ...')
+
+```
+
+
+
+## Labels
+`ggrepel` let's you make sure your text labels don't overlap. My example is a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to move the text off of the points, but `geom_text_repel` is quick and easy. 
+
+```{r Text Overlap, fig.show = "hold", out.width = "50%", echo = F}
+ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
+  geom_point() +
+  geom_text() +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
+    axis.title = element_text(size = 12)) +
+  labs(
+    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
+    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
+    title = 'geom_text')
+
+ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
+  geom_point() +
+  geom_text_repel() +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
+    axis.title = element_text(size = 12)) +
+  labs(
+    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
+    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
+    title = 'geom_text_repel')
+
+```
+
+If you want to only label a few points on the graph, you can either `geom_text_repel` using the `data(subset = ...)` or `annotate('text')`
+
+```{r Annotation, echo = F}
+ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
+  geom_point() +
+  annotate("text", x = -16.9, y = 7.2, label = paste("Individual 15"), color = "coral") +
+  theme_classic() +
+  theme(
+    axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
+    axis.title = element_text(size = 12)) +
+  labs(
+    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
+    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
+    title = 'annotate')
+
+```
+
+# The Data Points
+This is my favorite part, where the graph really starts to shine. 
+
+## Size
+I like to make the points a little bigger than the base size, so long as they're not overlapping. 
+
+
+```{r Size Queen, fig.show = "hold", out.width = "50%", include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
+  theme_classic() +
+  theme(plot.title = element_text(size = 16)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'Standard geom_point Size')
+
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N), size = 3) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'geom_point(size = 3)')
+```
+## Color
+I love color. I often try to create my own color palettes for data presentation, keeping in mind that they should be color-blind and printer friendly. When I don't want to create a bespoke palette, I use the package `viridis`. 
+
+```{r Viridis Showoff, fig.show = "hold", out.width = "30%", echo = F}
+ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
+  geom_bin2d() + coord_fixed() +
+  scale_fill_viridis() +
+  theme_classic()+ 
+  theme(legend.position = 'none') + 
+  labs(title = 'viridis')
+
+ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
+  geom_bin2d() + coord_fixed() +
+  scale_fill_viridis(option = 'inferno') +
+  theme_classic()+ 
+  theme(legend.position = 'none') + 
+  labs(title = 'inferno')
+
+ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
+  geom_bin2d() + coord_fixed() +
+  scale_fill_viridis(option = 'plasma') +
+  theme_classic()+ 
+  theme(legend.position = 'none') + 
+  labs(title = 'plasma')
+
+```
+
+The Viridis package isn't great for comparing two groups, so you're best off coming up with your own color scheme at that point. 
+
+```{r Color, fig.show = "hold", out.width = "50%", include = T, echo = F}
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site), size = 3) +
+  theme_classic() +
+  scale_color_viridis(discrete = T) +
+  theme(plot.title = element_text(size = 16)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'Viridis with two factors')
+
+ggplot() +
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site), size = 3) +
+  scale_color_manual(values = c("darkblue", "aquamarine3")) +
+  theme_classic() +
+  theme(
+    plot.title = element_text(size = 16),
+    axis.text.x = element_text(size = 12),
+    axis.text.y = element_text(size = 12)) + 
+   labs(
+      x = "", 
+      y = "",
+      title = 'Manual color choice')
+```
+
+
+## Bar Graphs For Strontium? 
+No. Never.
+
+[id1]: figures/excel_decimal.jpg "Awful Axes"
+[id2]: figures/excel_zero.jpg "Awful Axes, pt II"
