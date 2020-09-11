@@ -17,10 +17,13 @@ output:
 ```
 
 ```{r Libraries, include = F, echo = F}
+# Don't forget to install the packages if you don't have them installed on your machine already. 
+#These packages are what I always call for plotting. 
 library("tidyverse")
 library("viridis")
 library("ggrepel")
-#To read data directly from the github repo
+
+#This package is to read data directly from the github repo
 library("repmis")
 source_data("https://github.com/stantis/IsoDataVis/blob/master/ThesisData.RData?raw=True")
 ```
@@ -29,7 +32,7 @@ Good data visualization helps you tell your data's story with minimal misunderst
 
 Here I'm going to explain the datavis rules that I follow to create stable isotopes graphs, along with the associated R code. If you want to follow along and see all the code used for this page, download the R Markdown [here](https://github.com/stantis/IsoDataVis/blob/master/DataVis.Rmd) and take a look around. 
 
-I'm going to use bone collagen data (carbon, nitrogen, sulphur) and strontium from tooth enamel from my [PhD Thesis](https://ourarchive.otago.ac.nz/handle/10523/6019). These are bone samples from individuals excavated from two Polynesian sites, Bourewa (Fiji) and `Atele (Tonga). 
+I'm going to use bone collagen data (carbon, nitrogen, sulphur) and strontium from tooth enamel from my [PhD Thesis](https://ourarchive.otago.ac.nz/handle/10523/6019). These are bone samples from individuals excavated from two Polynesian sites, Bourewa (Fiji) and 'Atele (Tonga). 
 
 I've cleaned the data and put it in this repository as ThesisData.xlsx. Maybe later I'll share some R tips for cleaning data, but today let's focus on datavis. Let's focus on one component at a time, thinking about **why** it might be better to go in one art direction rather than another, and the underlying R code for making your data follow this datavis rule.
 
