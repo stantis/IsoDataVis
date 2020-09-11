@@ -6,7 +6,7 @@ knit: (function(input_file, encoding) {
   rmarkdown::render(input_file,
  encoding=encoding,
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
-output: 
+output:
   html_document:
     toc: true
     toc_depth: 2
@@ -18,7 +18,7 @@ output:
 
 ```{r Libraries, include = F, echo = F}
 # Don't forget to install the packages if you don't have them installed on your machine already. 
-#These packages are what I always call for plotting. 
+#These packages are what I always call for plotting.
 library("tidyverse")
 library("viridis")
 library("ggrepel")
@@ -28,11 +28,11 @@ library("repmis")
 source_data("https://github.com/stantis/IsoDataVis/blob/master/ThesisData.RData?raw=True")
 ```
 
-Good data visualization helps you tell your data's story with minimal misunderstanding. 
+Good data visualization helps you tell your data's story with minimal misunderstanding.
 
-Here I'm going to explain the datavis rules that I follow to create stable isotopes graphs, along with the associated R code. If you want to follow along and see all the code used for this page, download the R Markdown [here](https://github.com/stantis/IsoDataVis/blob/master/DataVis.Rmd) and take a look around. 
+Here I'm going to explain the datavis rules that I follow to create stable isotopes graphs, along with the associated R code. If you want to follow along and see all the code used for this page, download the R Markdown [here](https://github.com/stantis/IsoDataVis/blob/master/DataVis.Rmd) and take a look around.
 
-I'm going to use bone collagen data (carbon, nitrogen, sulphur) and strontium from tooth enamel from my [PhD Thesis](https://ourarchive.otago.ac.nz/handle/10523/6019). These are bone samples from individuals excavated from two Polynesian sites, Bourewa (Fiji) and 'Atele (Tonga). 
+I'm going to use bone collagen data (carbon, nitrogen, sulphur) and strontium from tooth enamel from my [PhD Thesis](https://ourarchive.otago.ac.nz/handle/10523/6019). These are bone samples from individuals excavated from two Polynesian sites, Bourewa (Fiji) and 'Atele (Tonga).
 
 I've cleaned the data and put it in this repository as ThesisData.xlsx. Maybe later I'll share some R tips for cleaning data, but today let's focus on datavis. Let's focus on one component at a time, thinking about **why** it might be better to go in one art direction rather than another, and the underlying R code for making your data follow this datavis rule.
 
@@ -40,7 +40,7 @@ Let's compare a simple carbon and nitrogen graph, with the sites color-coded. Th
 
 ```{r Starting Example, fig.show = "hold", out.width = "50%", include = T, echo = F}
 ggplot() +
-  geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site)) + 
+  geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site)) +
   labs(title = 'Ya Basic')
 
 ggplot() +
@@ -50,24 +50,24 @@ ggplot() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
     axis.text.y = element_text(size = 12),
-    axis.title = element_text(size = 12), 
-    legend.position = c(0.9, 0.9), 
-    legend.background = element_rect(size=0.5, linetype="solid", 
+    axis.title = element_text(size = 12),
+    legend.position = c(0.9, 0.9),
+    legend.background = element_rect(size=0.5, linetype="solid",
                                      colour ="black")) +
    labs(
     title = "My changes",
     color = "Site",
     shape = "Site",
     x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")))) 
+    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))))
 
 ```
-The first isn't *too* bad, especially not for intitial data exploration, but it's not ready for presentation. The plot on the right is publication-ready in my eyes, other than not being a high enough DPI for many journals. 
+The first isn't *too* bad, especially not for intitial data exploration, but it's not ready for presentation. The plot on the right is publication-ready in my eyes, other than not being a high enough DPI for many journals.
 
-Let's build the graph, one piece at a time. 
+Let's build the graph, one piece at a time.
 
 # 1. The Background
-I love dark themes. I'm writing in one of RStudio's right now. But, unless you're creating graphs for a dark-themed presentation or web output, graphs with black backgrounds aren't going to work well in publication and **no one** will like you when they're printing out your paper. 
+I love dark themes. I'm writing in one of RStudio's right now. But, unless you're creating graphs for a dark-themed presentation or web output, graphs with black backgrounds aren't going to work well in publication and **no one** will like you when they're printing out your paper.
 
 Some people like grid lines but I prefer a clean slate. The first image below is the carbon and nitrogen data plotted using ggplot, with no theme. The second image is the same data, but using the `theme_classic()` option.  
 
@@ -78,7 +78,7 @@ ggplot() +
   theme(
     plot.title = element_text(size = 16),
     axis.text.x=element_blank(),
-    axis.ticks.x=element_blank(), 
+    axis.ticks.x=element_blank(),
     axis.text.y=element_blank(),
     axis.ticks.y=element_blank()) +
    labs(
@@ -92,7 +92,7 @@ ggplot() +
   theme(
     plot.title = element_text(size = 16),
     axis.text.x=element_blank(),
-    axis.ticks.x=element_blank(), 
+    axis.ticks.x=element_blank(),
     axis.text.y=element_blank(),
     axis.ticks.y=element_blank()) +
    labs(
@@ -104,7 +104,7 @@ ggplot() +
 
 # 2. Axis Text and Ticks
 ## 2.1 Values
-When displaying any interval data, don't display any more decimal places than needed. Otherwise, the graph becomes increasingly difficult to read. Yes, I know that many stable isotopes data are presented to the first or even second decimal. *But* you don't need decimal points on your axes for isotope data other than strontium- save that richness of data for tables and text. This might be my biggest pet peeve for the smallest reason. It's hard to add extraneous decimal places in R, so I'm mostly looking at you, Excel users. 
+When displaying any interval data, don't display any more decimal places than needed. Otherwise, the graph becomes increasingly difficult to read. Yes, I know that many stable isotopes data are presented to the first or even second decimal. *But* you don't need decimal points on your axes for isotope data other than strontium- save that richness of data for tables and text. This might be my biggest pet peeve for the smallest reason. It's hard to add extraneous decimal places in R, so I'm mostly looking at you, Excel users.
 
 ![Awful Axes, Part I][id1]
 
@@ -115,9 +115,9 @@ Make sure the values text is large enough to read easily for most. Err on the si
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
-  theme(plot.title = element_text(size = 16)) + 
+  theme(plot.title = element_text(size = 16)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'Standard Axis Size')
 
@@ -127,36 +127,36 @@ ggplot() +
   theme(
     plot.title = element_text(size = 16),
     axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12)) + 
+    axis.text.y = element_text(size = 12)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'element_text(size = 12)')
 ```
-I sometimes angle the x-axis values because I think that makes me look fancy. 
+I sometimes angle the x-axis values because I think that makes me look fancy.
 ```{r AxisAngle, include = T, echo = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
   theme(
     axis.text.y = element_text(size = 12),
-    axis.text.x = element_text(size = 12, angle = 30, hjust = 1)) + 
+    axis.text.x = element_text(size = 12, angle = 30, hjust = 1)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'element_text(angle = 60, hjust = 1)')
 ```
 
 ## 2.2 Ticks and value range
-Be mindful of the value range you use. R and Excel try to be helpful, but there's two major ways they can be wrong. 
+Be mindful of the value range you use. R and Excel try to be helpful, but there's two major ways they can be wrong.
 
 ### Starting at zero
-Again, looking at you Excel. 
+Again, looking at you Excel.
 
 ![Awful Axes, Part II][id2]
 
 ### Axis range too narrow
-This one's trickier, and I often see researchers still learning about stable isotopes make this mistake. A population eating only from a C3 environment with no C4 or marine input might show a range in C-values of only 2 per mill. That doesn't mean your x-axis should only be 2 per mill across! This encourages you and your readers to think about differences in values on too small of a scale, and see patterns that aren't biologically meanful. Even if values are tight, widen out to include the expected environmental range. 
+This one's trickier, and I often see researchers still learning about stable isotopes make this mistake. A population eating only from a C3 environment with no C4 or marine input might show a range in C-values of only 2 per mill. That doesn't mean your x-axis should only be 2 per mill across! This encourages you and your readers to think about differences in values on too small of a scale, and see patterns that aren't biologically meanful. Even if values are tight, widen out to include the expected environmental range.
 ```{r AxisRange, include = T, echo = F, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
@@ -164,15 +164,15 @@ ggplot() +
   theme_classic() +
   theme(
     axis.text.y = element_text(size = 12),
-    axis.text.x = element_text(size = 12, angle = 30, hjust = 1)) + 
+    axis.text.x = element_text(size = 12, angle = 30, hjust = 1)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'Tight X Axis')
 ```
 
 ## 2.3 Tick Units
-Adjust your major units on the axes accordingly to the range you have. Too few tick marks, and it's hard to estimate the values using the graph and the reader has to delve into your raw data. Too many tick marks, and it's visually really busy. R likes to do it's best, but don't be afraid to be specific, especially for strontium data. 
+Adjust your major units on the axes accordingly to the range you have. Too few tick marks, and it's hard to estimate the values using the graph and the reader has to delve into your raw data. Too many tick marks, and it's visually really busy. R likes to do it's best, but don't be afraid to be specific, especially for strontium data.
 
 ```{r Tick Units, echo = F, warning = F}
 ggplot() +
@@ -182,9 +182,9 @@ ggplot() +
     axis.text.y = element_text(size = 12),
     axis.title.x=element_blank(),
         axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+ 
+        axis.ticks.x=element_blank())+
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'Automatic Tick Units')
 
@@ -196,38 +196,38 @@ ggplot() +
     axis.text.y = element_text(size = 12),
     axis.title.x=element_blank(),
         axis.text.x=element_blank(),
-        axis.ticks.x=element_blank())+ 
+        axis.ticks.x=element_blank())+
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'scale_y_continuous(breaks = ...')
 
 ```
 
 ## 2.4 Axis Titles
-For each axis displaying isotopic values, you'll want: 
+For each axis displaying isotopic values, you'll want:
 
 1. What's being measured (e.g. $\delta ^{13}$C, $\delta ^{15}$N)
 2. The unit (i.e. per mill ‰)
 3. The international reference used
 
-For `ggplot` the `labs` section is a big help, but it's not easy to superscript, subscript, include Greek characters, or lesser used scientific units. Below is the code you can copy/paste for easy use in your own graphs. Change out `x` and `y` depending on what axis it's on, and always remember to check that you've got matching brackets. 
+For `ggplot` the `labs` section is a big help, but it's not easy to superscript, subscript, include Greek characters, or lesser used scientific units. Below is the code you can copy/paste for easy use in your own graphs. Change out `x` and `y` depending on what axis it's on, and always remember to check that you've got matching brackets.
 
-For carbon from collagen, standardized to VPDB: 
+For carbon from collagen, standardized to VPDB:
 `x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))`
 
-Oxygen from carbonate, standarized to VSMOW, would look like this: 
+Oxygen from carbonate, standarized to VSMOW, would look like this:
 `x = expression(paste(delta^18, "O"[carbonate], " (\u2030, VSMOW)"))`
 
-For strontium ratios: 
+For strontium ratios:
 `y = expression(paste(""^{87},"Sr/"^86,"Sr"))`
 
 
 # 3. Labels
-Sometimes it's nice to label the points. The package `ggrepel` let's you make sure your text labels don't overlap. My example of the basic graphics in ggplot a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to move the text off of the points, but you can see that `geom_text_repel` is quick and easy. 
+Sometimes it's nice to label the points. The package `ggrepel` let's you make sure your text labels don't overlap. My example of the basic graphics in ggplot a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to move the text off of the points, but you can see that `geom_text_repel` is quick and easy.
 
 ```{r Text Overlap, fig.show = "hold", out.width = "50%", echo = F, , warning = F}
-ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
+ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) +
   geom_point() +
   geom_text() +
   theme_classic() +
@@ -239,7 +239,7 @@ ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, labe
     y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
     title = 'geom_text')
 
-ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
+ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) +
   geom_point() +
   geom_text_repel() +
   theme_classic() +
@@ -256,7 +256,7 @@ ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, labe
 If you want to only label a few points on the graph, you can either `geom_text_repel` using the `data(subset = ...)` or `annotate('text')`
 
 ```{r Annotation, echo = F, , warning = F}
-ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
+ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) +
   geom_point() +
   annotate("text", x = -16.9, y = 7.2, label = paste("Individual 15"), color = "coral") +
   theme_classic() +
@@ -271,19 +271,19 @@ ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, labe
 ```
 
 # 4. The Data Points
-This is my favorite part, where the graph really starts to shine. 
+This is my favorite part, where the graph really starts to shine.
 
 ## 4.1 Size
-I like to make the points a little bigger than the base size, so long as they're not overlapping. 
+I like to make the points a little bigger than the base size, so long as they're not overlapping.
 
 
 ```{r Size, fig.show = "hold", out.width = "50%", include = T, echo = F, , warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
-  theme(plot.title = element_text(size = 16)) + 
+  theme(plot.title = element_text(size = 16)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'Standard geom_point Size')
 
@@ -293,53 +293,53 @@ ggplot() +
   theme(
     plot.title = element_text(size = 16),
     axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12)) + 
+    axis.text.y = element_text(size = 12)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'geom_point(size = 3)')
 ```
 
 ## 4.2 Color
-I love color. I often try to create my own color palettes for data presentation, keeping in mind that they should be color-blind and printer friendly. When I don't want to create a bespoke palette, I use the package `viridis`. A lot of people like `RColorBrewer` as well. 
+I love color. I often try to create my own color palettes for data presentation, keeping in mind that they should be color-blind and printer friendly. When I don't want to create a bespoke palette, I use the package `viridis`. A lot of people like `RColorBrewer` as well.
 
 ```{r Viridis Showoff, fig.show = "hold", out.width = "30%", echo = F, , warning = F}
 ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
   geom_bin2d() + coord_fixed() +
   scale_fill_viridis() +
-  theme_classic()+ 
-  theme(legend.position = 'none', 
-        plot.title = element_text(size = 25)) + 
+  theme_classic()+
+  theme(legend.position = 'none',
+        plot.title = element_text(size = 25)) +
   labs(title = 'viridis')
 
 ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
   geom_bin2d() + coord_fixed() +
   scale_fill_viridis(option = 'inferno') +
-  theme_classic()+ 
-  theme(legend.position = 'none', 
-        plot.title = element_text(size = 25)) + 
+  theme_classic()+
+  theme(legend.position = 'none',
+        plot.title = element_text(size = 25)) +
   labs(title = 'inferno')
 
 ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
   geom_bin2d() + coord_fixed() +
   scale_fill_viridis(option = 'plasma') +
-  theme_classic()+ 
-  theme(legend.position = 'none', 
-        plot.title = element_text(size = 25)) + 
+  theme_classic()+
+  theme(legend.position = 'none',
+        plot.title = element_text(size = 25)) +
   labs(title = 'plasma')
 
 ```
 
-The Viridis package isn't great for comparing two groups, so you're best off coming up with your own color scheme at that point. 
+The Viridis package isn't great for comparing two groups, so you're best off coming up with your own color scheme at that point.
 
 ```{r Color, fig.show = "hold", out.width = "50%", include = T, echo = F, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site), size = 3) +
   theme_classic() +
   scale_color_viridis(discrete = T) +
-  theme(plot.title = element_text(size = 16)) + 
+  theme(plot.title = element_text(size = 16)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'Viridis with two factors')
 
@@ -350,17 +350,17 @@ ggplot() +
   theme(
     plot.title = element_text(size = 16),
     axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12)) + 
+    axis.text.y = element_text(size = 12)) +
    labs(
-      x = "", 
+      x = "",
       y = "",
       title = 'Manual color choice')
 ```
 
 ## 4.3 Shapes
-I like to use both color **and** shape where possible, to help with set apart groups. Generally, I just let ggplot decide on the shapes. 
+I like to use both color **and** shape where possible, to help with set apart groups. Generally, I just let ggplot decide on the shapes.
 
-```{r Shape, echo = F, warning = F, include = T} 
+```{r Shape, echo = F, warning = F, include = T}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site), size = 3) +
  scale_color_manual(values = c("aquamarine3", "darkorange")) +
@@ -368,20 +368,20 @@ ggplot() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
     axis.text.y = element_text(size = 12),
-    axis.title = element_text(size = 12)) + 
+    axis.title = element_text(size = 12)) +
     labs(
     title = "Basic Shape Choices",
     x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
-    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))) 
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")))
 
 ```
 
 
 # 5. Absolute Legend
-We're hitting the point of tiny changes to make your graph just **that** much nicer. 
-For the legend, as with your x and y axis titles, your variable names might not be formatted in a way you want people to see. In the example we've been looking at, my color and shape are determined by variable `site` which isn't too terrible to read, but I like capitalizing my legend title. I also like to outline my legend box. There's two different ways to do this, but I use the one that most consistently makes a line around the entirety of the box, not just a weird shadow. 
+We're hitting the point of tiny changes to make your graph just **that** much nicer.
+For the legend, as with your x and y axis titles, your variable names might not be formatted in a way you want people to see. In the example we've been looking at, my color and shape are determined by variable `site` which isn't too terrible to read, but I like capitalizing my legend title. I also like to outline my legend box. There's two different ways to do this, but I use the one that most consistently makes a line around the entirety of the box, not just a weird shadow.
 
-When I have some whitespace in the top right corner, I try to make use of that by manually moving the legend over. 
+When I have some whitespace in the top right corner, I try to make use of that by manually moving the legend over.
 
 ```{r Legend, echo = F, warning = F, include = T}
 ggplot() +
@@ -391,38 +391,38 @@ ggplot() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
     axis.text.y = element_text(size = 12),
-    axis.title = element_text(size = 12), 
-    legend.position = c(0.9, 0.9), 
-    legend.background = element_rect(size = 0.5, linetype="solid", 
+    axis.title = element_text(size = 12),
+    legend.position = c(0.9, 0.9),
+    legend.background = element_rect(size = 0.5, linetype="solid",
                                      colour ="black")) +
    labs(
     title = "My changes",
     color = "Site",
     shape = "Site",
     x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")))) 
+    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))))
 ```
 
 
 # 6. Exporting to 5000 DPI
-Journals will often ask for images to be 300 dpi or greater, presumably to put them on a billboard in Amsterdam. Here's a handy bit of code to copy, alter, and paste for export to whatever image type and dpi you need. 
+Journals will often ask for images to be 300 dpi or greater, presumably to put them on a billboard in Amsterdam. Here's a handy bit of code to copy, alter, and paste for export to whatever image type and dpi you need.
 
 ```
 Figure_Name <- your ggplot code here
 dev.off()
 ggsave(filename = "FigName.tiff", Figure_Name, width = 270, height = 135, units = c("mm"), dpi = 300)
-``` 
+```
 
-You can change the image type (.tiff, .jpg, etc.), dpi, whatever you need. 
+You can change the image type (.tiff, .jpg, etc.), dpi, whatever you need.
 
 
 
-# 7. Bar Graphs For Strontium? 
+# 7. Bar Graphs For Strontium?
 No. Never.
 
 
-# 8. What are your thoughts? 
-This is an early version (v 1.2), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R. 
+# 8. What are your thoughts?
+This is an early version (v 1.2), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R.
 
 [id1]: figures/excel_decimal.jpg "Awful Axes"
 [id2]: figures/excel_zero.jpg "Awful Axes, pt II"
