@@ -13,11 +13,11 @@ output:
 ---
 
 ```{r setup, include = F}
-#knitr::opts_chunk$set(echo = F, include = F)
+knitr::opts_chunk$set(echo = F, include = F)
 ```
 
 ```{r Libraries, include = F, echo = F}
-# Don't forget to install the packages if you don't have them installed on your machine already. 
+# Don't forget to install the packages if you don't have them installed on your machine already.
 #These packages are what I always call for plotting.
 library("tidyverse")
 library("viridis")
