@@ -1,0 +1,19 @@
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+name: Generate HTML
+
+jobs:
+  knitr:
+    name: knitr html
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v1
+      - name: Install knitr
+        run: Rscript -e 'install.packages('knitr', dependencies = TRUE)'
