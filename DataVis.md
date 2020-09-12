@@ -1,18 +1,18 @@
-Stable Isotopes for Archaeology: Data Visualization
-================
+# Stable Isotopes for Archaeology: Data Visualization
+
 C Stantis
 7/21/2020
 
-  - [The Background](#the-background)
-  - [Axis Text and Ticks](#axis-text-and-ticks)
-      - [Values](#values)
-      - [Ticks and value range](#ticks-and-value-range)
-      - [Tick Units](#tick-units)
-      - [Axis Titles](#axis-titles)
-      - [Labels](#labels)
-  - [The Data Points](#the-data-points)
-      - [Size](#size)
-      - [Bar Graphs For Strontium?](#bar-graphs-for-strontium)
+- [The Background](#the-background)
+- [Axis Text and Ticks](#axis-text-and-ticks)
+  - [Values](#values)
+  - [Ticks and value range](#ticks-and-value-range)
+  - [Tick Units](#tick-units)
+  - [Axis Titles](#axis-titles)
+  - [Labels](#labels)
+- [The Data Points](#the-data-points)
+  - [Size](#size)
+  - [Bar Graphs For Strontium?](#bar-graphs-for-strontium)
 
 Good data visualization helps you tell your data’s story with minimal
 misunderstanding.
@@ -33,7 +33,7 @@ datavis rule.
 
 Let’s build the graph, one piece at a time.
 
-# The Background
+## The Background
 
 I love dark themes. I’m writing in one of RStudio’s right now. But,
 unless you’re creating graphs for a dark-themed presentation or web
@@ -49,9 +49,9 @@ option.
 
 <img src="LotsaGraphs_files/figure-gfm/Background Example-1.png" width="50%" /><img src="LotsaGraphs_files/figure-gfm/Background Example-2.png" width="50%" />
 
-# Axis Text and Ticks
+## Axis Text and Ticks
 
-## Values
+### Values
 
 When displaying any interval data, don’t display any more decimal places
 than needed. Otherwise, the graph becomes increasingly difficult to
@@ -71,20 +71,20 @@ layout.
 
 <img src="LotsaGraphs_files/figure-gfm/Axis-1.png" width="50%" /><img src="LotsaGraphs_files/figure-gfm/Axis-2.png" width="50%" />
 I sometimes angle the x-axis values because I think that makes me look
-fancy. ![](LotsaGraphs_files/figure-gfm/AxisAngle-1.png)<!-- -->
+fancy. ![So Fancy!](LotsaGraphs_files/figure-gfm/AxisAngle-1.png)<!-- -->
 
-## Ticks and value range
+### Ticks and value range
 
 Be mindful of the value range you use. R and Excel try to be helpful,
 but there’s two major ways they can be wrong.
 
-### Starting at zero
+#### Starting at zero
 
 Again, looking at you Excel.
 
 ![don’t do this either.](figures/excel_zero.jpg "Awful Axes, pt II")
 
-### Axis range too narrow
+#### Axis range too narrow
 
 This one’s trickier, and I often see researchers still learning about
 stable isotopes make this mistake. A population eating only from a C3
@@ -97,9 +97,9 @@ expected environmental range.
 
     ## Warning: Removed 31 rows containing missing values (geom_point).
 
-![](LotsaGraphs_files/figure-gfm/AxisRange-1.png)<!-- -->
+![Nice And Wide](LotsaGraphs_files/figure-gfm/AxisRange-1.png)<!-- -->
 
-## Tick Units
+### Tick Units
 
 Adjust your major units on the axes accordingly to the range you have.
 Too few tick marks, and it’s hard to estimate the values using the graph
@@ -109,19 +109,19 @@ to be specific, especially for strontium data.
 
     ## Warning: Removed 62 rows containing missing values (geom_point).
 
-![](LotsaGraphs_files/figure-gfm/Tick%20Units-1.png)<!-- -->
+![Fewer Ticks](LotsaGraphs_files/figure-gfm/Tick%20Units-1.png)<!-- -->
 
     ## Warning: Removed 62 rows containing missing values (geom_point).
 
-![](LotsaGraphs_files/figure-gfm/Tick%20Units-2.png)<!-- -->
+![More Ticks](LotsaGraphs_files/figure-gfm/Tick%20Units-2.png)<!-- -->
 
-## Axis Titles
+### Axis Titles
 
 For each axis, you’ll want: \* what’s being measured
 (e.g. \(\delta ^{13}\)C, \(\delta ^{15}\)N) \* the unit (i.e. per mill)
 \* the international reference used
 
-## Labels
+### Labels
 
 `ggrepel` let’s you make sure your text labels don’t overlap. My example
 is a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to
@@ -133,13 +133,13 @@ easy.
 If you want to only label a few points on the graph, you can either
 `geom_text_repel` using the `data(subset = ...)` or `annotate('text')`
 
-![](LotsaGraphs_files/figure-gfm/Annotation-1.png)<!-- -->
+![Much Cleaner](LotsaGraphs_files/figure-gfm/Annotation-1.png)<!-- -->
 
-# The Data Points
+## The Data Points
 
 This is my favorite part, where the graph really starts to shine.
 
-## Size
+### Size
 
 I like to make the points a little bigger than the base size, so long as
 they’re not
@@ -160,6 +160,6 @@ point.
 
 <img src="LotsaGraphs_files/figure-gfm/Color-1.png" width="50%" /><img src="LotsaGraphs_files/figure-gfm/Color-2.png" width="50%" />
 
-## Bar Graphs For Strontium?
+### Bar Graphs For Strontium?
 
 No. Never.
