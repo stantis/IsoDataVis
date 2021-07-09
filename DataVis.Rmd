@@ -8,6 +8,7 @@ knit: (function(input_file, encoding) {
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 output: 
   html_document:
+    code_folding: hide
     toc: true
     toc_depth: 2
 ---
