@@ -423,6 +423,7 @@ No. Never.
 
 # 8. What are your thoughts? 
 This is an early version (v 1.2), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R. 
+If you found this helpful, think about citing it! The doi is [10.5281/zenodo.4743734](https://zenodo.org/record/4743735#.YOix3TOSmUk). 
 
 [id1]: figures/excel_decimal.jpg "Awful Axes"
 [id2]: figures/excel_zero.jpg "Awful Axes, pt II"
