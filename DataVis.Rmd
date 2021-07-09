@@ -8,6 +8,7 @@ knit: (function(input_file, encoding) {
  output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
 output: 
   html_document:
+    code_folding: hide
     toc: true
     toc_depth: 2
 ---
@@ -38,7 +39,7 @@ I've cleaned the data and put it in this repository as ThesisData.xlsx. Maybe la
 
 Let's compare a simple carbon and nitrogen graph, with the sites color-coded. The left is letting ggplot decide all aspects of the graph, while the right is how I would prepare a graph for publication.  
 
-```{r Starting Example, fig.show = "hold", out.width = "50%", include = T, echo = F}
+```{r Starting Example, fig.show = "hold", out.width = "50%", include = T, echo = T}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site)) + 
   labs(title = 'Ya Basic')
@@ -52,14 +53,15 @@ ggplot() +
     axis.text.y = element_text(size = 12),
     axis.title = element_text(size = 12), 
     legend.position = c(0.9, 0.9), 
-    legend.background = element_rect(size=0.5, linetype="solid", 
-                                     colour ="black")) +
+    legend.background = element_rect(size=0.5, linetype="solid", colour ="black")
+    ) +
    labs(
     title = "My changes",
     color = "Site",
     shape = "Site",
-    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")))) 
+    x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))
+    ) 
 
 ```
 The first isn't *too* bad, especially not for intitial data exploration, but it's not ready for presentation. The plot on the right is publication-ready in my eyes, other than not being a high enough DPI for many journals. 
@@ -72,7 +74,7 @@ I love dark themes. I'm writing in one of RStudio's right now. But, unless you'r
 Some people like grid lines but I prefer a clean slate. The first image below is the carbon and nitrogen data plotted using ggplot, with no theme. The second image is the same data, but using the `theme_classic()` option.  
 
 
-```{r Background Example, fig.show = "hold", out.width = "50%", include = T, echo = F}
+```{r Background Example, fig.show = "hold", out.width = "50%", include = T, echo = T}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme(
@@ -111,7 +113,7 @@ When displaying any interval data, don't display any more decimal places than ne
 Make sure the values text is large enough to read easily for most. Err on the side of caution, some publishers like to shove your figure into one column of a two-column article layout.
 
 
-```{r Axis, fig.show = "hold", out.width = "50%", include = T, echo = F}
+```{r Axis, fig.show = "hold", out.width = "50%", include = T, echo = T}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
@@ -134,7 +136,7 @@ ggplot() +
       title = 'element_text(size = 12)')
 ```
 I sometimes angle the x-axis values because I think that makes me look fancy. 
-```{r AxisAngle, include = T, echo = F}
+```{r AxisAngle, include = T, echo = T}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
@@ -157,7 +159,7 @@ Again, looking at you Excel.
 
 ### Axis range too narrow
 This one's trickier, and I often see researchers still learning about stable isotopes make this mistake. A population eating only from a C3 environment with no C4 or marine input might show a range in C-values of only 2 per mill. That doesn't mean your x-axis should only be 2 per mill across! This encourages you and your readers to think about differences in values on too small of a scale, and see patterns that aren't biologically meanful. Even if values are tight, widen out to include the expected environmental range. 
-```{r AxisRange, include = T, echo = F, warning = F}
+```{r AxisRange, include = T, echo = T, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   scale_x_continuous(limits = c(-19, -17)) +
@@ -174,7 +176,7 @@ ggplot() +
 ## 2.3 Tick Units
 Adjust your major units on the axes accordingly to the range you have. Too few tick marks, and it's hard to estimate the values using the graph and the reader has to delve into your raw data. Too many tick marks, and it's visually really busy. R likes to do it's best, but don't be afraid to be specific, especially for strontium data. 
 
-```{r Tick Units, echo = F, warning = F}
+```{r Tick Units, echo = T, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = reorder(Sr, Sr), y = Sr)) +
   theme_classic() +
@@ -226,18 +228,20 @@ For strontium ratios:
 # 3. Labels
 Sometimes it's nice to label the points. The package `ggrepel` let's you make sure your text labels don't overlap. My example of the basic graphics in ggplot a little harsh, as I could have used `hjust = 0, nudge_x = 0.05` to move the text off of the points, but you can see that `geom_text_repel` is quick and easy. 
 
-```{r Text Overlap, fig.show = "hold", out.width = "50%", echo = F, , warning = F}
+```{r Text Overlap, fig.show = "hold", out.width = "50%", echo = T, , warning = F}
 ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
   geom_point() +
   geom_text() +
   theme_classic() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-    axis.title = element_text(size = 12)) +
+    axis.title = element_text(size = 12)
+    ) +
   labs(
-    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
-    title = 'geom_text')
+    x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")),
+    title = 'geom_text'
+    )
 
 ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
   geom_point() +
@@ -245,28 +249,32 @@ ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, labe
   theme_classic() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-    axis.title = element_text(size = 12)) +
+    axis.title = element_text(size = 12)
+    ) +
   labs(
-    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
-    title = 'geom_text_repel')
+    x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")),
+    title = 'geom_text_repel'
+    )
 
 ```
 
 If you want to only label a few points on the graph, you can either `geom_text_repel` using the `data(subset = ...)` or `annotate('text')`
 
-```{r Annotation, echo = F, , warning = F}
+```{r Annotation, echo = T, , warning = F}
 ggplot(data = subset(ThesisData, site == 'Bourewa'), aes(x = C_coll, y = N, label = publication_ID)) + 
   geom_point() +
   annotate("text", x = -16.9, y = 7.2, label = paste("Individual 15"), color = "coral") +
   theme_classic() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
-    axis.title = element_text(size = 12)) +
+    axis.title = element_text(size = 12)
+    ) +
   labs(
-    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))),
-    title = 'annotate')
+    x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")),
+    title = 'annotate'
+    )
 
 ```
 
@@ -277,7 +285,7 @@ This is my favorite part, where the graph really starts to shine.
 I like to make the points a little bigger than the base size, so long as they're not overlapping. 
 
 
-```{r Size, fig.show = "hold", out.width = "50%", include = T, echo = F, , warning = F}
+```{r Size, fig.show = "hold", out.width = "50%", include = T, echo = T, , warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N)) +
   theme_classic() +
@@ -303,7 +311,7 @@ ggplot() +
 ## 4.2 Color
 I love color. I often try to create my own color palettes for data presentation, keeping in mind that they should be color-blind and printer friendly. When I don't want to create a bespoke palette, I use the package `viridis`. A lot of people like `RColorBrewer` as well. 
 
-```{r Viridis Showoff, fig.show = "hold", out.width = "30%", echo = F, , warning = F}
+```{r Viridis Showoff, fig.show = "hold", out.width = "30%", echo = T, , warning = F}
 ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
   geom_bin2d() + coord_fixed() +
   scale_fill_viridis() +
@@ -332,7 +340,7 @@ ggplot(data.frame(x = rnorm(10000), y = rnorm(10000)), aes(x = x, y = y)) +
 
 The Viridis package isn't great for comparing two groups, so you're best off coming up with your own color scheme at that point. 
 
-```{r Color, fig.show = "hold", out.width = "50%", include = T, echo = F, warning = F}
+```{r Color, fig.show = "hold", out.width = "50%", include = T, echo = T, warning = F}
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site), size = 3) +
   theme_classic() +
@@ -350,17 +358,19 @@ ggplot() +
   theme(
     plot.title = element_text(size = 16),
     axis.text.x = element_text(size = 12),
-    axis.text.y = element_text(size = 12)) + 
+    axis.text.y = element_text(size = 12)
+    ) + 
    labs(
       x = "", 
       y = "",
-      title = 'Manual color choice')
+      title = 'Manual color choice'
+      )
 ```
 
 ## 4.3 Shapes
 I like to use both color **and** shape where possible, to help with set apart groups. Generally, I just let ggplot decide on the shapes. 
 
-```{r Shape, echo = F, warning = F, include = T} 
+```{r Shape, echo = T, warning = F, include = T} 
 ggplot() +
   geom_point(data = ThesisData,  aes(x = C_coll, y = N, color = site, shape = site), size = 3) +
  scale_color_manual(values = c("aquamarine3", "darkorange")) +
@@ -368,11 +378,13 @@ ggplot() +
   theme(
     axis.text.x = element_text(size = 12, angle = 60, hjust = 1),
     axis.text.y = element_text(size = 12),
-    axis.title = element_text(size = 12)) + 
+    axis.title = element_text(size = 12)
+    ) + 
     labs(
     title = "Basic Shape Choices",
     x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
-    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))) 
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))
+    ) 
 
 ```
 
@@ -383,7 +395,7 @@ For the legend, as with your x and y axis titles, your variable names might not 
 
 When I have some whitespace in the top right corner, I try to make use of that by manually moving the legend over. 
 
-```{r Legend, echo = F, warning = F, include = T}
+```{r Legend, echo = T, warning = F, include = T}
 ggplot() +
   geom_point(data = subset(ThesisData, !is.na(sex)),  aes(x = C_coll, y = N, color = site, shape = site), size = 3) +
   theme_classic() +
@@ -393,14 +405,15 @@ ggplot() +
     axis.text.y = element_text(size = 12),
     axis.title = element_text(size = 12), 
     legend.position = c(0.9, 0.9), 
-    legend.background = element_rect(size = 0.5, linetype="solid", 
-                                     colour ="black")) +
+    legend.background = element_rect(size = 0.5, linetype="solid", colour ="black")
+    ) +
    labs(
     title = "My changes",
     color = "Site",
     shape = "Site",
-    x = (expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)"))),
-    y = (expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)")))) 
+    x = expression(paste(delta^13, "C"[collagen], " (\u2030, VPDB)")),
+    y = expression(paste(delta^15, "N"[collagen], " (\u2030, AIR)"))
+    ) 
 ```
 
 
@@ -422,7 +435,8 @@ No. Never.
 
 
 # 8. What are your thoughts? 
-This is an early version (v 1.2), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R. 
+This is an early version (v 1.3), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R. 
+
 If you found this helpful, think about citing it! The doi is [10.5281/zenodo.4743734](https://zenodo.org/record/4743735#.YOix3TOSmUk). 
 
 [id1]: figures/excel_decimal.jpg "Awful Axes"
