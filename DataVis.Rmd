@@ -29,6 +29,8 @@ library("repmis")
 source_data("https://github.com/stantis/IsoDataVis/blob/master/ThesisData.RData?raw=True")
 ```
 
+Good data visualization helps you tell your data's story with minimal misunderstanding. 
+
 Here I'm going to explain the datavis rules that I follow to create stable isotopes graphs, along with the associated R code. If you want to follow along and see all the code used for this page, download the R Markdown [here](https://github.com/stantis/IsoDataVis/blob/master/DataVis.Rmd) and take a look around. 
 
 I'm going to use bone collagen data (carbon, nitrogen, sulphur) and strontium from tooth enamel from my [PhD Thesis](https://ourarchive.otago.ac.nz/handle/10523/6019). These are bone samples from individuals excavated from two Polynesian sites, Bourewa (Fiji) and 'Atele (Tonga). 
@@ -433,8 +435,7 @@ No. Never.
 
 
 # 8. What are your thoughts? 
-This is an early version (v 1.3), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R. 
-
+This is an early version (v 1.2), please let me know what I've missed either through Github or through [Twitter](https://twitter.com/ChrisStantis) if you want to see more isotopes-specific graphing in R. 
 If you found this helpful, think about citing it! The doi is [10.5281/zenodo.4743734](https://zenodo.org/record/4743735#.YOix3TOSmUk). 
 
 [id1]: figures/excel_decimal.jpg "Awful Axes"
